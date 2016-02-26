@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <!--phaser framework-->
+    <script src="lib/phaser.min.js" type="application/javascript"></script>
+
+    <!--Game states-->
+    <script src="src/hBoot.js" type="application/javascript"></script>
+    <script src="src/hPreload.js" type="application/javascript"></script>
+    <script src="src/hMenu.js" type="application/javascript"></script>
+    <script src="src/hGame.js" type="application/javascript"></script>
+
+    <!--Game objects-->
+    <script src="src/objects/hEnemy.js" type="application/javascript"></script>
+    <script src="src/objects/hNPC.js" type="application/javascript"></script>
+    <script src="src/objects/hPlayer.js" type="application/javascript"></script>
+
+</head>
+<body>
+
+    <div id="Game"></div>
+
+    <script>
+        var game = new Phaser.Game(800,600, Phaser.AUTO, 'Game');
+
+        game.state.add('hBoot',hBoot);
+        game.state.add('hPreload',hPreload);
+        game.state.add('hMenu',hMenu);
+        game.state.add('hGame',hGame);
+        game.state.start('hBoot');
+    </script>
+
+</body>
+</html>
