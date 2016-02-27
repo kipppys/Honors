@@ -5,7 +5,7 @@ hPlayer = function(game, x, y, img){
     this.speed = 60;
 
     this.facing = "down";
-    this.currWeapon = "";
+    this.currWeapon = "bow";
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.maxVelocity.x = 60;
@@ -47,7 +47,12 @@ hPlayer = function(game, x, y, img){
     this.animations.add("bowDown", [66,67,68,69,70,71], 6, false);
 
     this.arrow = this.game.add.sprite(this.x, this.y, "playerArrow");
+    this.arrow.lifespan = 2000;
     this.arrow.kill();
+    this.arrow.events.onRevived.add(function(){
+        this.arrow.x = this.x;
+        this.arrow.y = this.y;
+    }, this);
 
     this.attacking = false;
 };
@@ -127,42 +132,75 @@ hPlayer.prototype.movement = function(){
 
 hPlayer.prototype.attack = function(){
 
-    //attack up
-    if(this.attackUpKey.isDown && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isUp){
-        if(this.currWeapon == "sword"){
-            this.animations.play("swordUp");
-        } else{
-            this.animations.play("bowUp");
+    if(this.attacking == false) {
+        //attack up
+        if (this.attackUpKey.isDown && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isUp) {
+            if (this.currWeapon == "sword") {
+                this.animations.play("swordUp");
+            } else if (this.currWeapon == "bow") {
+                this.animations.play("bowUp");
+            }
+            this.facing = "up";
+        }
+
+        //attack down
+        if (this.attackUpKey.isUp && this.attackDownKey.isDown && this.attackRightKey.isUp && this.attackLeftKey.isUp) {
+
+            if (this.currWeapon == "sword") {
+                this.animations.play("swordDown");
+            } else if (this.currWeapon == "bow") {
+                this.animations.play("bowDown");
+            }
+            this.facing = "down";
+        }
+
+        //attack right
+        if (this.attackUpKey.isUp && this.attackDownKey.isUp && this.attackRightKey.isDown && this.attackLeftKey.isUp) {
+
+            if (this.currWeapon == "sword") {
+                this.animations.play("swordRight");
+            } else if (this.currWeapon == "bow") {
+                this.animations.play("bowRight");
+            }
+            this.facing = "right";
+        }
+
+        //attack left
+        if (this.attackUpKey.isUp && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isDown) {
+
+            if (this.currWeapon == "sword") {
+                this.animations.play("swordLeft");
+            } else if (this.currWeapon == "bow") {
+                this.animations.play("bowLeft");
+            }
+            this.facing = "left";
         }
     }
 
-    //attack down
-    if(this.attackUpKey.isUp && this.attackDownKey.isDown && this.attackRightKey.isUp && this.attackLeftKey.isUp){
+    if(this.currWeapon =="bow" && this.arrow.alive == false){
+        if(this.animations.currentAnim.currentFrame.index == 64 || this.animations.currentAnim.currentFrame.index == 76 ||
+            this.animations.currentAnim.currentFrame.index == 70 || this.animations.currentAnim.currentFrame.index == 82){
 
-        if(this.currWeapon == "sword"){
-            this.animations.play("swordDown");
-        } else{
-            this.animations.play("bowDown");
-        }
-    }
+            console.log("this");
+            this.arrow.revive(this.x, this.y);
+            switch (this.facing) {
+                case "up":
+                    this.arrow.frame = 2;
 
-    //attack right
-    if(this.attackUpKey.isUp && this.attackDownKey.isUp && this.attackRightKey.isDown && this.attackLeftKey.isUp){
+                    break;
+                case "left":
+                    this.arrow.frame = 0;
 
-        if(this.currWeapon == "sword"){
-            this.animations.play("swordRight");
-        } else{
-            this.animations.play("bowRight");
-        }
-    }
+                    break;
+                case "down":
+                    this.arrow.frame = 3;
 
-    //attack left
-    if(this.attackUpKey.isUp && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isDown){
+                    break;
+                case "right":
+                    this.arrow.frame = 1;
 
-        if(this.currWeapon == "sword"){
-            this.animations.play("swordLeft");
-        } else{
-            this.animations.play("bowLeft");
+                    break;
+            }
         }
     }
 
