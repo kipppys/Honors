@@ -12,6 +12,7 @@ var player;
 
 var shopDoor;
 var homeDoor;
+var villageDoor;
 
 hVillage.prototype = {
     preload: function(){
@@ -22,10 +23,6 @@ hVillage.prototype = {
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = 0;
 
-       this.loadLevel("shop");
-
-        player.x = 407;
-        player.y = 340;
         shopDoor = this.game.add.sprite(680,416, "door");
         game.physics.enable(shopDoor, Phaser.Physics.ARCADE);
         shopDoor.visible = false;
@@ -33,6 +30,15 @@ hVillage.prototype = {
         homeDoor = this.game.add.sprite(552,80, "door");
         game.physics.enable(homeDoor, Phaser.Physics.ARCADE);
         homeDoor.visible = false;
+
+        villageDoor = this.game.add.sprite(0,0, "door");
+        game.physics.enable(villageDoor, Phaser.Physics.ARCADE);
+        homeDoor.visible = true;
+
+       this.loadLevel("home");
+
+        player.x = 373;
+        player.y = 320;
 
         //make the camera follow the player
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN);
@@ -57,6 +63,18 @@ hVillage.prototype = {
             }
         }, null, this);
 
+        this.game.physics.arcade.overlap(player, villageDoor, function(){
+            if(player.interactKey.isDown == true) {
+
+                if(map.key == "home"){
+                    this.loadLevel("village", 552, 96);
+                } else if(map.key == "shop") {
+
+                }
+
+            }
+        }, null, this);
+
     },
 
     render: function(){
@@ -65,7 +83,7 @@ hVillage.prototype = {
 
     },
 
-    loadLevel: function(newMap){
+    loadLevel: function(newMap, x,y){
 
         if(map!= null){
             map.destroy();
@@ -86,8 +104,13 @@ hVillage.prototype = {
         layers[1].visible = false;
         this.game.camera.setBoundsToWorld();
 
-        player = new hPlayer(this.game, 150,200,"playerSheet");
+
+        player = new hPlayer(this.game, x, y, "playerSheet");
         this.game.add.existing(player);
 
+        if(newMap == "home" || newMap == "shop"){
+            villageDoor.x = 416;
+            villageDoor.y = 368;
+        }
     }
 };

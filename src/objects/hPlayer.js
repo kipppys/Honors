@@ -5,7 +5,7 @@ hPlayer = function(game, x, y, img){
     this.speed = 240;
 
     this.facing = "down";
-    this.currWeapon = "bow";
+    this.currWeapon = "";
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.maxVelocity.x = 60;
