@@ -10,10 +10,14 @@ hPreload.prototype = {
         this.game.load.image("playBtn", "assets/images/menu/play btn.PNG");
         this.game.load.image("instBtn", "assets/images/menu/inst btn.png");
         this.game.load.image("instPop", "assets/images/menu/instructionsPopup.png");
+        this.game.load.image("dialog", "assets/images/menu/dialog box.PNG");
 
         //maps and tile set
         this.game.load.tilemap("village", "assets/maps/Village.json", null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap("home", "assets/maps/home.json", null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap("shop", "assets/maps/shop.json", null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image("tileset", "assets/images/tileset.png");
+        this.game.load.image("door", "assets/images/door.PNG");
 
         //player
         this.game.load.spritesheet("playerSheet", "assets/images/player sheet.png", 35,41);

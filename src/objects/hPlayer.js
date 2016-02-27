@@ -2,7 +2,7 @@ hPlayer = function(game, x, y, img){
     Phaser.Sprite.call(this, game, x, y, img);
     this.frame = 3;
 
-    this.speed = 60;
+    this.speed = 240;
 
     this.facing = "down";
     this.currWeapon = "bow";
@@ -46,13 +46,7 @@ hPlayer = function(game, x, y, img){
     this.animations.add("bowRight", [78,79,80,81,82,83], 6, false);
     this.animations.add("bowDown", [66,67,68,69,70,71], 6, false);
 
-    this.arrow = this.game.add.sprite(this.x, this.y, "playerArrow");
-    this.arrow.lifespan = 2000;
-    this.arrow.kill();
-    this.arrow.events.onRevived.add(function(){
-        this.arrow.x = this.x;
-        this.arrow.y = this.y;
-    }, this);
+    this.arrows();
 
     this.attacking = false;
 };
@@ -132,7 +126,7 @@ hPlayer.prototype.movement = function(){
 
 hPlayer.prototype.attack = function(){
 
-    if(this.attacking == false) {
+    if(this.attacking == false  && this.arrow.alive == false) {
         //attack up
         if (this.attackUpKey.isDown && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isUp) {
             if (this.currWeapon == "sword") {
@@ -181,39 +175,80 @@ hPlayer.prototype.attack = function(){
         if(this.animations.currentAnim.currentFrame.index == 64 || this.animations.currentAnim.currentFrame.index == 76 ||
             this.animations.currentAnim.currentFrame.index == 70 || this.animations.currentAnim.currentFrame.index == 82){
 
-            console.log("this");
-            this.arrow.revive(this.x, this.y);
-            switch (this.facing) {
-                case "up":
-                    this.arrow.frame = 2;
+            this.arrow.revive();
 
-                    break;
-                case "left":
-                    this.arrow.frame = 0;
+        }
+    }
+    if(this.arrow.alive == false || this.currWeapon == "sword"){
+        if(this.attackUpKey.isDown || this.attackDownKey.isDown || this.attackRightKey.isDown || this.attackLeftKey.isDown){
+            this.body.velocity.x = 0;
+            this.body.velocity.y = 0;
 
-                    break;
-                case "down":
-                    this.arrow.frame = 3;
-
-                    break;
-                case "right":
-                    this.arrow.frame = 1;
-
-                    break;
-            }
+            this.attacking = true;
+            this.animations.currentAnim.onComplete.add(function(){
+                this.attacking = false;
+            }, this);
         }
     }
 
-    if(this.attackUpKey.isDown || this.attackDownKey.isDown || this.attackRightKey.isDown || this.attackLeftKey.isDown){
+};
+
+hPlayer.prototype.arrows = function(){
+
+    this.arrow = this.game.add.sprite(this.x, this.y, "playerArrow");
+    this.arrowSpeed = 120;
+    this.arrowLifeSpan = 1000;
+    game.physics.enable(this.arrow, Phaser.Physics.ARCADE);
+    this.arrow.anchor.setTo(.5,.5);
+    this.arrow.lifespan = this.arrowLifeSpan;
+    this.arrow.kill();
+
+    this.arrow.events.onRevived.add(function(){
+        this.arrow.x = this.x;
+        this.arrow.y = this.y;
+
+        this.arrow.lifespan = this.arrowLifeSpan;
+
+        switch (this.facing) {
+            case "up":
+                this.arrow.frame = 2;
+                this.arrow.body.velocity.y -= this.arrowSpeed;
+                this.arrow.x = this.x+16;
+                this.arrow.y = this.y;
+                this.arrow.body.setSize(5,15);
+
+                break;
+            case "left":
+                this.arrow.frame = 0;
+                this.arrow.body.velocity.x -= this.arrowSpeed;
+                this.arrow.x = this.x+5;
+                this.arrow.y = this.y+23;
+                this.arrow.body.setSize(15,5);
+
+                break;
+            case "down":
+                this.arrow.frame = 3;
+                this.arrow.body.velocity.y += this.arrowSpeed;
+                this.arrow.x = this.x+20;
+                this.arrow.y = this.y+40;
+                this.arrow.body.setSize(5,15);
+
+                break;
+            case "right":
+                this.arrow.frame = 1;
+                this.arrow.body.velocity.x += this.arrowSpeed;
+                this.arrow.x = this.x+20;
+                this.arrow.y = this.y+23;
+                this.arrow.body.setSize(15,5);
+
+                break;
+        }
+    }, this);
+
+    this.arrow.events.onKilled.add(function(){
         this.body.velocity.x = 0;
         this.body.velocity.y = 0;
-
-        this.attacking = true;
-        this.animations.currentAnim.onComplete.add(function(){
-            this.attacking = false;
-        }, this);
-    }
-
+    },this.arrow);
 
 };
 
