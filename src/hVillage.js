@@ -14,6 +14,10 @@ var shopDoor;
 var homeDoor;
 var villageDoor;
 
+var NPCGroup;
+var mother1;
+var day;
+
 hVillage.prototype = {
     preload: function(){
 
@@ -33,13 +37,32 @@ hVillage.prototype = {
 
         villageDoor = this.game.add.sprite(0,0, "door");
         game.physics.enable(villageDoor, Phaser.Physics.ARCADE);
-        homeDoor.visible = true;
+        villageDoor.visible = true;
 
-       this.loadLevel("home");
+        player = new hPlayer(this.game, 600, 500, "playerSheet");
+        this.game.add.existing(player);
+        player.x = 407;
+        player.y = 335;
 
-        player.x = 373;
-        player.y = 320;
+        NPCGroup = this.game.add.group();
 
+        this.loadLevel("home");
+
+        mother1 = new hNPC(game, 416,256, "mother",
+            [
+                "Good morning Allan, could you run to the shop before you go out with your friends?",
+                "Yes of course mother.",
+                "Such a good boy, we need some carrots and a sack of potatoes",
+                "Ok mother ill be back soon.",
+                "Be Careful.",
+                "I will."]
+        , 15, 15);
+
+        mother1.anchor.setTo(.5,.5);
+        mother1.x = 416;
+        mother1.y = 256;
+
+        NPCGroup.add(mother1);
         //make the camera follow the player
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN);
 
@@ -49,17 +72,18 @@ hVillage.prototype = {
         this.game.physics.arcade.collide(player, layers[2], null);
 
         this.game.physics.arcade.overlap(player, shopDoor, function(){
-            if(player.interactKey.isDown == true)
-                player.x = 394;
-                player.y = 300;
+            if(player.interactKey.isDown == true) {
                 this.loadLevel("shop");
-        });
+                player.x = 407;
+                player.y = 335;
+            }
+        },null, this);
 
         this.game.physics.arcade.overlap(player, homeDoor, function(){
             if(player.interactKey.isDown == true) {
                 this.loadLevel("home");
                 player.x = 407;
-                player.y = 340;
+                player.y = 335;
             }
         }, null, this);
 
@@ -67,13 +91,26 @@ hVillage.prototype = {
             if(player.interactKey.isDown == true) {
 
                 if(map.key == "home"){
-                    this.loadLevel("village", 552, 96);
+                    this.loadLevel("village");
+                    player.x = 542;
+                    player.y = 90;
                 } else if(map.key == "shop") {
-
+                    this.loadLevel("village");
+                    player.x = 670;
+                    player.y = 424;
                 }
-
             }
         }, null, this);
+
+        this.game.physics.arcade.overlap(player, NPCGroup, function(player, npc){
+            if(player.interactKey.isDown && npc.talked == false){
+                npc.openDialog();
+            }
+        }, null, this);
+
+        NPCGroup.forEach(function(npc){
+            this.game.physics.arcade.collide(player, npc.collideBody, null);
+        });
 
     },
 
@@ -81,15 +118,20 @@ hVillage.prototype = {
         game.debug.body(player);
         game.debug.body(player.arrow);
 
+
+        NPCGroup.forEach(function(npc){
+            game.debug.body(npc.collideBody);
+        });
+
+
     },
 
-    loadLevel: function(newMap, x,y){
+    loadLevel: function(newMap){
 
         if(map!= null){
             map.destroy();
             layers[0].destroy();
             layers[1].destroy();
-            player.destroy();
         }
 
         map = game.add.tilemap(newMap);
@@ -104,9 +146,8 @@ hVillage.prototype = {
         layers[1].visible = false;
         this.game.camera.setBoundsToWorld();
 
-
-        player = new hPlayer(this.game, x, y, "playerSheet");
-        this.game.add.existing(player);
+        player.bringToTop();
+        game.world.bringToTop(NPCGroup);
 
         if(newMap == "home" || newMap == "shop"){
             villageDoor.x = 416;

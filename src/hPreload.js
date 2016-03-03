@@ -21,7 +21,6 @@ hPreload.prototype = {
 
         //player
         this.game.load.spritesheet("playerSheet", "assets/images/player sheet.png", 35,41);
-        this.game.load.spritesheet("playerSheetNoWeap", "assets/images/no weap sheet player.png", 35,41);
         this.game.load.spritesheet("playerArrow", "assets/images/arrow sheet.PNG", 15,15);
 
         //enemies

@@ -5,7 +5,7 @@ hPlayer = function(game, x, y, img){
     this.speed = 240;
 
     this.facing = "down";
-    this.currWeapon = "";
+    this.currWeapon = "bow";
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.maxVelocity.x = 60;
@@ -29,10 +29,17 @@ hPlayer = function(game, x, y, img){
     this.attackRightKey = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
 
     //movement animations
+    //with weapons
     this.animations.add("runUp", [24,25,26,27,28,29], 6, true);
     this.animations.add("runLeft", [18,19,20,21,22,23], 6, true);
     this.animations.add("runRight", [12,13,14,15,16,17], 6, true);
     this.animations.add("runDown", [30,31,32,33,34,35], 6, true);
+
+    //without weapons
+    this.animations.add("runUpWw", [102,103,104,105,106,107], 6, true);
+    this.animations.add("runLeftWw", [96,97,98,99,100,101], 6, true);
+    this.animations.add("runRightWw", [90,91,92,93,94,95], 6, true);
+    this.animations.add("runDownWw", [108,109,110,111,112,113], 6, true);
 
     //sword swing animations
     this.animations.add("swordUp", [48,49,50,51,52], 6, false);
@@ -55,10 +62,11 @@ hPlayer.prototype = Object.create(Phaser.Sprite.prototype);
 hPlayer.prototype.constructor = hPlayer;
 
 hPlayer.prototype.update = function(){
-    this.attack();
 
+    if(this.currWeapon != "") {
+        this.attack();
+    }
     this.movement();
-
     this.idleDir();
 
 };
@@ -67,24 +75,50 @@ hPlayer.prototype.idleDir = function() {
     if(this.moveDownKey.isUp && this.moveUpKey.isUp && this.moveRightKey.isUp && this.moveLeftKey.isUp && this.attacking == false) {
 
         this.animations.stop();
-        switch (this.facing) {
-            case "up":
-                this.frame = 2;
 
-                break;
-            case "left":
-                this.frame = 0;
+        //no weapon idle
+        if(this.currWeapon == ""){
+            switch (this.facing) {
+                case "up":
+                    this.frame = 86;
 
-                break;
-            case "down":
-                this.frame = 3;
+                    break;
+                case "left":
+                    this.frame = 84;
 
-                break;
-            case "right":
-                this.frame = 1;
+                    break;
+                case "down":
+                    this.frame = 87;
 
-                break;
+                    break;
+                case "right":
+                    this.frame = 85;
+
+                    break;
+            }
         }
+        //with weapon idle
+        else {
+            switch (this.facing) {
+                case "up":
+                    this.frame = 2;
+
+                    break;
+                case "left":
+                    this.frame = 0;
+
+                    break;
+                case "down":
+                    this.frame = 3;
+
+                    break;
+                case "right":
+                    this.frame = 1;
+
+                    break;
+            }
+        }
+
     }
 };
 
@@ -92,25 +126,46 @@ hPlayer.prototype.movement = function(){
     if(this.attacking == false) {
         if (this.moveUpKey.isDown && this.moveDownKey.isUp && this.moveRightKey.isUp && this.moveLeftKey.isUp) {
             this.body.velocity.y -= this.speed;
-            this.animations.play("runUp");
+
+            if(this.currWeapon == ""){
+                this.animations.play("runUpWw");
+            } else {
+                this.animations.play("runUp");
+            }
+
             this.facing = "up";
         }
 
         if (this.moveLeftKey.isDown && this.moveDownKey.isUp && this.moveUpKey.isUp && this.moveRightKey.isUp) {
             this.body.velocity.x -= this.speed;
-            this.animations.play("runLeft");
+            if(this.currWeapon == ""){
+                this.animations.play("runLeftWw");
+            } else {
+                this.animations.play("runLeft");
+            }
+
             this.facing = "left";
         }
 
         if (this.moveDownKey.isDown && this.moveUpKey.isUp && this.moveRightKey.isUp && this.moveLeftKey.isUp) {
             this.body.velocity.y += this.speed;
-            this.animations.play("runDown");
+            if(this.currWeapon == ""){
+                this.animations.play("runDownWw");
+            } else {
+                this.animations.play("runDown");
+            }
+
             this.facing = "down";
         }
 
         if (this.moveRightKey.isDown && this.moveDownKey.isUp && this.moveUpKey.isUp && this.moveLeftKey.isUp) {
             this.body.velocity.x += this.speed;
-            this.animations.play("runRight");
+            if(this.currWeapon == ""){
+                this.animations.play("runRightWw");
+            } else {
+                this.animations.play("runRight");
+            }
+
             this.facing = "right";
         }
 
@@ -206,6 +261,8 @@ hPlayer.prototype.arrows = function(){
     this.arrow.events.onRevived.add(function(){
         this.arrow.x = this.x;
         this.arrow.y = this.y;
+
+        this.arrow.bringToTop();
 
         this.arrow.lifespan = this.arrowLifeSpan;
 
