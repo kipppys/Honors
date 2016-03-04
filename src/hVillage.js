@@ -17,7 +17,11 @@ var villageDoor;
 var NPCGroup;
 var mother1;
 var shopKeep;
-var day;
+
+var canExit = false;
+var gotFood = false;
+
+var villageMusic;
 
 hVillage.prototype = {
     preload: function(){
@@ -40,15 +44,13 @@ hVillage.prototype = {
         game.physics.enable(villageDoor, Phaser.Physics.ARCADE);
         villageDoor.visible = true;
 
-        player = new hPlayer(this.game, 600, 500, "playerSheet");
+        player = new hPlayer(this.game, 373, 320, "playerSheet");
         this.game.add.existing(player);
-        player.x = 407;
-        player.y = 335;
 
         NPCGroup = this.game.add.group();
 
-        this.loadLevel("home");
-
+        villageMusic = this.game.add.audio("villageMusic");
+        villageMusic.play("", 0, 0.1, true,true);
 
         mother1 = new hNPC(game, 416,256, "mother",
             [
@@ -71,7 +73,7 @@ hVillage.prototype = {
             [
                 "Allan: Could i have some carrots and a sack of potatoes please?",
                 "Shop Keep: Your mother making soup?",
-                "Allan: Yes she is carrot and potato i think.",
+                "Allan: Yes she is, carrot and potato i think.",
                 "Shop Keep: That sounds very nice...",
                 "Shop Keep: Why don't you take these to go with it, get some meat on your bones.",
                 "Allan: Thank you very much, good bye.",
@@ -86,8 +88,12 @@ hVillage.prototype = {
         shopKeep.visible = false;
         shopKeep.anchor.setTo(.5,.5);
 
+        this.loadLevel("home");
+
         NPCGroup.add(mother1);
         NPCGroup.add(shopKeep);
+
+
         //make the camera follow the player
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN);
 
@@ -107,6 +113,11 @@ hVillage.prototype = {
 
         this.game.physics.arcade.overlap(player, homeDoor, function(){
             if(player.interactKey.isDown == true) {
+
+                if(gotFood == true){
+
+                }
+
                 this.loadLevel("home");
                 player.x = 407;
                 player.y = 335;
@@ -116,17 +127,17 @@ hVillage.prototype = {
         this.game.physics.arcade.overlap(player, villageDoor, function(){
             if(player.interactKey.isDown == true) {
 
-                mother1.visible = false;
-                shopKeep.visible = false;
-
-                if(map.key == "home"){
+                if(map.key == "home" && canExit == true){
                     this.loadLevel("village");
                     player.x = 542;
                     player.y = 90;
+                    mother1.visible = false;
+
                 } else if(map.key == "shop") {
                     this.loadLevel("village");
                     player.x = 670;
                     player.y = 424;
+                    shopKeep.visible = false;
                 }
             }
         }, null, this);
@@ -139,8 +150,10 @@ hVillage.prototype = {
 
             if(npc.dialogBox.visible == true){
                 player.canMove = false;
+                villageMusic.volume = 0.03;
             } else if(player.canMove == false){
                 player.canMove = true;
+                villageMusic.volume = 0.1;
             }
         }, null, this);
 
@@ -154,10 +167,18 @@ hVillage.prototype = {
 
         });
 
+        if(mother1.talked == true){
+            canExit = true;
+        }
+
+        if(shopKeep.talked == true){
+            gotFood = true;
+        }
+
     },
 
     render: function(){
-        game.debug.body(player);
+       /* game.debug.body(player);
         game.debug.body(player.arrow);
 
 
@@ -165,7 +186,7 @@ hVillage.prototype = {
             game.debug.body(npc.collideBody);
         });
 
-
+*/
     },
 
     loadLevel: function(newMap){
@@ -188,8 +209,9 @@ hVillage.prototype = {
         layers[1].visible = false;
         this.game.camera.setBoundsToWorld();
 
-        player.bringToTop();
+
         game.world.bringToTop(NPCGroup);
+        player.bringToTop();
 
         if(newMap == "home" || newMap == "shop"){
             villageDoor.x = 416;

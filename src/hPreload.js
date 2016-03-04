@@ -42,6 +42,7 @@ hPreload.prototype = {
 
         //sounds
         this.game.load.audio("menuMusic", "assets/sounds/music/Menu.mp3");
+        this.game.load.audio("villageMusic", "assets/sounds/music/area/village.mp3");
 
         //narrative
         this.game.load.audio("mother1", "assets/sounds/narrative/mother/good morning shop.mp3");
