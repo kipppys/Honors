@@ -16,6 +16,7 @@ var villageDoor;
 
 var NPCGroup;
 var mother1;
+var shopKeep;
 var day;
 
 hVillage.prototype = {
@@ -48,21 +49,45 @@ hVillage.prototype = {
 
         this.loadLevel("home");
 
+
         mother1 = new hNPC(game, 416,256, "mother",
             [
-                "Good morning Allan, could you run to the shop before you go out with your friends?",
-                "Yes of course mother.",
-                "Such a good boy, we need some carrots and a sack of potatoes",
-                "Ok mother ill be back soon.",
-                "Be Careful.",
-                "I will."]
-        , 15, 15);
-
+                "Mother: Good morning Allan, could you run to the shop for me?",
+                "Allan: Yes of course mother.",
+                "Mother: Such a good boy, we need some carrots and a sack of potatoes",
+                "Allan: Ok mother ill be back soon.",
+                "Mother: Be Careful.",
+                "Allan: I will."],
+            [
+                game.add.audio("mother1"),
+                game.add.audio("mother2"),
+                game.add.audio("mother3")],
+            15, 15, "mother");
         mother1.anchor.setTo(.5,.5);
         mother1.x = 416;
         mother1.y = 256;
 
+        shopKeep = new hNPC(game, 460,256, "oldWoman",
+            [
+                "Allan: Could i have some carrots and a sack of potatoes please?",
+                "Shop Keep: Your mother making soup?",
+                "Allan: Yes she is carrot and potato i think.",
+                "Shop Keep: That sounds very nice...",
+                "Shop Keep: Why don't you take these to go with it, get some meat on your bones.",
+                "Allan: Thank you very much, good bye.",
+                "Shop Keep: Have a good day Allan.",
+                "Allan: Thank you, you too."],
+            [
+                game.add.audio("shopKeep1"),
+                game.add.audio("shopKeep2"),
+                game.add.audio("shopKeep3"),
+                game.add.audio("shopKeep4")],
+            15, 15, "shopKeep");
+        shopKeep.visible = false;
+        shopKeep.anchor.setTo(.5,.5);
+
         NPCGroup.add(mother1);
+        NPCGroup.add(shopKeep);
         //make the camera follow the player
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN);
 
@@ -76,6 +101,7 @@ hVillage.prototype = {
                 this.loadLevel("shop");
                 player.x = 407;
                 player.y = 335;
+                shopKeep.visible = true;
             }
         },null, this);
 
@@ -90,6 +116,9 @@ hVillage.prototype = {
         this.game.physics.arcade.overlap(player, villageDoor, function(){
             if(player.interactKey.isDown == true) {
 
+                mother1.visible = false;
+                shopKeep.visible = false;
+
                 if(map.key == "home"){
                     this.loadLevel("village");
                     player.x = 542;
@@ -103,13 +132,26 @@ hVillage.prototype = {
         }, null, this);
 
         this.game.physics.arcade.overlap(player, NPCGroup, function(player, npc){
-            if(player.interactKey.isDown && npc.talked == false){
+            if(player.interactKey.isDown && npc.talked == false && npc.dialogBox.visible == false){
                 npc.openDialog();
+                console.log("this");
+            }
+
+            if(npc.dialogBox.visible == true){
+                player.canMove = false;
+            } else if(player.canMove == false){
+                player.canMove = true;
             }
         }, null, this);
 
         NPCGroup.forEach(function(npc){
+
             this.game.physics.arcade.collide(player, npc.collideBody, null);
+
+            if(npc.key == "mother" && map.key != "home"){
+                npc.visible = false;
+            }
+
         });
 
     },

@@ -43,6 +43,25 @@ hPreload.prototype = {
         //sounds
         this.game.load.audio("menuMusic", "assets/sounds/music/Menu.mp3");
 
+        //narrative
+        this.game.load.audio("mother1", "assets/sounds/narrative/mother/good morning shop.mp3");
+        this.game.load.audio("mother2", "assets/sounds/narrative/mother/good boy sack of taties.mp3");
+        this.game.load.audio("mother3", "assets/sounds/narrative/mother/be carefull.mp3");
+        this.game.load.audio("mother4", "assets/sounds/narrative/mother/good morning.mp3");
+        this.game.load.audio("mother5", "assets/sounds/narrative/mother/east road apples.mp3");
+        this.game.load.audio("mother6", "assets/sounds/narrative/mother/wont chase you off.mp3");
+
+        this.game.load.audio("shopKeep1", "assets/sounds/narrative/old woman/mother making soup.mp3");
+        this.game.load.audio("shopKeep2", "assets/sounds/narrative/old woman/very nice.mp3");
+        this.game.load.audio("shopKeep3", "assets/sounds/narrative/old woman/take these.mp3");
+        this.game.load.audio("shopKeep4", "assets/sounds/narrative/old woman/good day.mp3");
+
+        //SFX
+        this.game.load.audio("bowFire", "assets/sounds/SFX/player/bow fire.mp3");
+        this.game.load.audio("playerDam", "assets/sounds/SFX/player/player damaged.mp3");
+        this.game.load.audio("swordSwing", "assets/sounds/SFX/player/sword swing.mp3");
+
+
     },
     create: function(){
         this.game.state.start('hMenu');

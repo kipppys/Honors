@@ -1,4 +1,4 @@
-hNPC = function(game, x, y, img, textNarrative, bsX, bsY){
+hNPC = function(game, x, y, img, textNarrative, audioNarrative, bsX, bsY, key){
     Phaser.Sprite.call(this, game, x, y, img);
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -12,7 +12,7 @@ hNPC = function(game, x, y, img, textNarrative, bsX, bsY){
     this.collideBody.body.setSize(bsX,bsY);
 
     this.textDialogArray = textNarrative;
-    this.audioDialogArray =[];
+    this.audioDialogArray = audioNarrative;
 
     this.dialogBox = this.game.add.sprite(400,500,"dialog");
     this.dialogBox.anchor.setTo(.5,.5);
@@ -35,6 +35,7 @@ hNPC = function(game, x, y, img, textNarrative, bsX, bsY){
     this.talked = false;
 
     this.sentence = 0;
+    this.nextAudio = 0;
 };
 
 hNPC.prototype = Object.create(Phaser.Sprite.prototype);
@@ -57,6 +58,12 @@ hNPC.prototype.update = function(){
                 this.talked = true;
             } else {
                 this.dialogText.setText(this.textDialogArray[this.sentence]);
+
+                if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0){
+                    this.audioDialogArray[this.nextAudio].play();
+                    this.nextAudio += 1;
+                }
+
             }
             this.canNext = false;
             this.lastNext = this.game.time.totalElapsedSeconds() + this.nextDely;
@@ -68,6 +75,13 @@ hNPC.prototype.update = function(){
     } else {
         this.nextText.visible = false;
     }
+
+    if(this.visible == false && this.collideBody.alive == true){
+        this.collideBody.kill();
+    } else if(this.visible == true && this.collideBody.alive == false){
+        this.collideBody.revive();
+    }
+
 };
 
 hNPC.prototype.openDialog = function(){
@@ -83,6 +97,11 @@ hNPC.prototype.openDialog = function(){
     this.lastNext = this.game.time.totalElapsedSeconds() + this.nextDely;
 
     this.dialogText.setText(this.textDialogArray[this.sentence]);
+
+    if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0){
+        this.audioDialogArray[this.nextAudio].play();
+        this.nextAudio += 1;
+    }
 
 };
 

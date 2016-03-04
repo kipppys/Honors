@@ -5,7 +5,7 @@ hPlayer = function(game, x, y, img){
     this.speed = 240;
 
     this.facing = "down";
-    this.currWeapon = "bow";
+    this.currWeapon = "sword";
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.maxVelocity.x = 60;
@@ -53,9 +53,15 @@ hPlayer = function(game, x, y, img){
     this.animations.add("bowRight", [78,79,80,81,82,83], 6, false);
     this.animations.add("bowDown", [66,67,68,69,70,71], 6, false);
 
+    this.bowFireSound = this.game.add.audio("bowFire");
+    this.playerDamagedSound = this.game.add.audio("playerDam");
+    this.swordSwingSound = this.game.add.audio("swordSwing");
+
     this.arrows();
 
     this.attacking = false;
+
+    this.canMove = true;
 };
 
 hPlayer.prototype = Object.create(Phaser.Sprite.prototype);
@@ -66,7 +72,10 @@ hPlayer.prototype.update = function(){
     if(this.currWeapon != "") {
         this.attack();
     }
-    this.movement();
+
+    if(this.canMove == true) {
+        this.movement();
+    }
     this.idleDir();
 
 };
@@ -186,8 +195,10 @@ hPlayer.prototype.attack = function(){
         if (this.attackUpKey.isDown && this.attackDownKey.isUp && this.attackRightKey.isUp && this.attackLeftKey.isUp) {
             if (this.currWeapon == "sword") {
                 this.animations.play("swordUp");
+                this.swordSwingSound.play();
             } else if (this.currWeapon == "bow") {
                 this.animations.play("bowUp");
+                this.bowFireSound.play();
             }
             this.facing = "up";
         }
@@ -197,8 +208,10 @@ hPlayer.prototype.attack = function(){
 
             if (this.currWeapon == "sword") {
                 this.animations.play("swordDown");
+                this.swordSwingSound.play();
             } else if (this.currWeapon == "bow") {
                 this.animations.play("bowDown");
+                this.bowFireSound.play();
             }
             this.facing = "down";
         }
@@ -208,8 +221,10 @@ hPlayer.prototype.attack = function(){
 
             if (this.currWeapon == "sword") {
                 this.animations.play("swordRight");
+                this.swordSwingSound.play();
             } else if (this.currWeapon == "bow") {
                 this.animations.play("bowRight");
+                this.bowFireSound.play();
             }
             this.facing = "right";
         }
@@ -219,11 +234,14 @@ hPlayer.prototype.attack = function(){
 
             if (this.currWeapon == "sword") {
                 this.animations.play("swordLeft");
+                this.swordSwingSound.play();
             } else if (this.currWeapon == "bow") {
                 this.animations.play("bowLeft");
+                this.bowFireSound.play();
             }
             this.facing = "left";
         }
+
     }
 
     if(this.currWeapon =="bow" && this.arrow.alive == false){
