@@ -22,7 +22,7 @@ hMenu.prototype = {
 
         playBtn = this.game.add.button(332.5,315,"playBtn", function(){
             Music.stop();
-            this.game.state.start("hVillage");
+            this.game.state.start("hVillageDay2");
         });
 
         instBtn = this.game.add.button(195,450,"instBtn", function(){

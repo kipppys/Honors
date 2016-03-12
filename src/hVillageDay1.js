@@ -1,7 +1,7 @@
 /**
  * Created by William on 27/02/2016.
  */
-var hVillage = function(game){
+var hVillageDay1 = function(game){
 
 };
 
@@ -15,7 +15,7 @@ var homeDoor;
 var villageDoor;
 
 var NPCGroup;
-var mother1;
+var mother;
 var shopKeep;
 
 var canExit = false;
@@ -23,7 +23,9 @@ var gotFood = false;
 
 var villageMusic;
 
-hVillage.prototype = {
+var narrativeNPC;
+
+hVillageDay1.prototype = {
     preload: function(){
 
     },
@@ -52,7 +54,7 @@ hVillage.prototype = {
         villageMusic = this.game.add.audio("villageMusic");
         villageMusic.play("", 0, 0.1, true,true);
 
-        mother1 = new hNPC(game, 416,256, "mother",
+        mother = new hNPC(game, 416,256, "mother",
             [
                 "Mother: Good morning Allan, could you run to the shop for me?",
                 "Allan: Yes of course mother.",
@@ -65,9 +67,9 @@ hVillage.prototype = {
                 game.add.audio("mother2"),
                 game.add.audio("mother3")],
             15, 15, "mother");
-        mother1.anchor.setTo(.5,.5);
-        mother1.x = 416;
-        mother1.y = 256;
+        mother.anchor.setTo(.5,.5);
+        mother.x = 416;
+        mother.y = 256;
 
         shopKeep = new hNPC(game, 460,256, "oldWoman",
             [
@@ -88,11 +90,20 @@ hVillage.prototype = {
         shopKeep.visible = false;
         shopKeep.anchor.setTo(.5,.5);
 
-        this.loadLevel("home");
+        narrativeNPC = new hNPC(game,0,0, null,
+            ["Mother thanks you for going to the shop.",
+             "You spend the rest of the day playing with your friends.",
+             "You return home in time for supper and enjoy the soup and meat.",
+             "Your bed beckons you to sleep after a long day.",
+             "...You awaken to a new day."
+            ], null, null, null, "narrative");
 
-        NPCGroup.add(mother1);
+
+        loadLevel("home");
+
+        NPCGroup.add(mother);
         NPCGroup.add(shopKeep);
-
+        NPCGroup.add(narrativeNPC);
 
         //make the camera follow the player
         this.game.camera.follow(player, Phaser.Camera.FOLLOW_TOPDOWN);
@@ -104,7 +115,7 @@ hVillage.prototype = {
 
         this.game.physics.arcade.overlap(player, shopDoor, function(){
             if(player.interactKey.isDown == true) {
-                this.loadLevel("shop");
+                loadLevel("shop");
                 player.x = 407;
                 player.y = 335;
                 shopKeep.visible = true;
@@ -115,26 +126,37 @@ hVillage.prototype = {
             if(player.interactKey.isDown == true) {
 
                 if(gotFood == true){
-
+                    map.destroy();
+                    layers[0].destroy();
+                    layers[1].destroy();
+                    villageDoor.visible = false;
+                    narrativeNPC.openDialog();
+                    player.x = -407;
+                    player.y = -335;
+                } else {
+                    loadLevel("home");
+                    player.x = 407;
+                    player.y = 335;
                 }
-
-                this.loadLevel("home");
-                player.x = 407;
-                player.y = 335;
             }
         }, null, this);
+
+        if(narrativeNPC.talked == true){
+            villageMusic.stop();
+            this.game.state.start("hVillageDay1");
+        }
 
         this.game.physics.arcade.overlap(player, villageDoor, function(){
             if(player.interactKey.isDown == true) {
 
                 if(map.key == "home" && canExit == true){
-                    this.loadLevel("village");
+                    loadLevel("village");
                     player.x = 542;
                     player.y = 90;
-                    mother1.visible = false;
+                    mother.visible = false;
 
                 } else if(map.key == "shop") {
-                    this.loadLevel("village");
+                    loadLevel("village");
                     player.x = 670;
                     player.y = 424;
                     shopKeep.visible = false;
@@ -167,7 +189,7 @@ hVillage.prototype = {
 
         });
 
-        if(mother1.talked == true){
+        if(mother.talked == true){
             canExit = true;
         }
 
@@ -187,35 +209,35 @@ hVillage.prototype = {
         });
 
 */
-    },
-
-    loadLevel: function(newMap){
-
-        if(map!= null){
-            map.destroy();
-            layers[0].destroy();
-            layers[1].destroy();
-        }
-
-        map = game.add.tilemap(newMap);
-        map.addTilesetImage('tileset');
-
-        layers[0] = map.createLayer("background");
-        layers[1] = map.createLayer("collision");
-
-        map.setCollision([1,20], true, layers[1]);
-
-        layers[0].resizeWorld();
-        layers[1].visible = false;
-        this.game.camera.setBoundsToWorld();
-
-
-        game.world.bringToTop(NPCGroup);
-        player.bringToTop();
-
-        if(newMap == "home" || newMap == "shop"){
-            villageDoor.x = 416;
-            villageDoor.y = 368;
-        }
     }
 };
+
+function loadLevel(newMap){
+
+    if(map!= null){
+        map.destroy();
+        layers[0].destroy();
+        layers[1].destroy();
+    }
+
+    map = game.add.tilemap(newMap);
+    map.addTilesetImage('tileset');
+
+    layers[0] = map.createLayer("background");
+    layers[1] = map.createLayer("collision");
+
+    map.setCollision([1,20], true, layers[1]);
+
+    layers[0].resizeWorld();
+    layers[1].visible = false;
+    this.game.camera.setBoundsToWorld();
+
+
+    game.world.bringToTop(NPCGroup);
+    player.bringToTop();
+
+    if(newMap == "home" || newMap == "shop"){
+        villageDoor.x = 416;
+        villageDoor.y = 368;
+    }
+}

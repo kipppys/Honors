@@ -2,14 +2,14 @@ hPlayer = function(game, x, y, img){
     Phaser.Sprite.call(this, game, x, y, img);
     this.frame = 3;
 
-    this.speed = 240;
+    this.speed = 80;
 
     this.facing = "down";
-    this.currWeapon = "";
+    this.currWeapon = "sword";
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.body.maxVelocity.x = 60;
-    this.body.maxVelocity.y = 60;
+    this.body.maxVelocity.x = 80;
+    this.body.maxVelocity.y = 80;
     this.body.setSize(19,23);
     this.body.offset.setTo(8,9);
 

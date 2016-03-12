@@ -16,6 +16,7 @@ hPreload.prototype = {
         this.game.load.tilemap("village", "assets/maps/Village.json", null, Phaser.Tilemap.TILED_JSON);
         this.game.load.tilemap("home", "assets/maps/home.json", null, Phaser.Tilemap.TILED_JSON);
         this.game.load.tilemap("shop", "assets/maps/shop.json", null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap("east road", "assets/maps/east road.json", null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image("tileset", "assets/images/tileset.png");
         this.game.load.image("door", "assets/images/door.PNG");
 
@@ -43,6 +44,7 @@ hPreload.prototype = {
         //sounds
         this.game.load.audio("menuMusic", "assets/sounds/music/Menu.mp3");
         this.game.load.audio("villageMusic", "assets/sounds/music/area/village.mp3");
+        this.game.load.audio("eastRoad", "assets/sounds/music/area/east gate.mp3");
 
         //narrative
         this.game.load.audio("mother1", "assets/sounds/narrative/mother/good morning shop.mp3");

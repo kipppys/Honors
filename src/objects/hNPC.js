@@ -59,7 +59,7 @@ hNPC.prototype.update = function(){
             } else {
                 this.dialogText.setText(this.textDialogArray[this.sentence]);
 
-                if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0){
+                if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0 && this.audioDialogArray != null){
                     this.audioDialogArray[this.nextAudio].play();
                     this.nextAudio += 1;
                 }
@@ -98,7 +98,7 @@ hNPC.prototype.openDialog = function(){
 
     this.dialogText.setText(this.textDialogArray[this.sentence]);
 
-    if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0){
+    if(this.textDialogArray[this.sentence].indexOf("Allan: ") < 0 && this.audioDialogArray != null){
         this.audioDialogArray[this.nextAudio].play();
         this.nextAudio += 1;
     }
